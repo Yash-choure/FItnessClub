@@ -1,0 +1,50 @@
+<%- include('../partials/adminLayoutStart') %>
+<h1 class="h3 mb-3">Payments</h1>
+<form class="card card-body mb-4" method="post" action="/admin/payments">
+  <h2 class="h5">Record payment</h2>
+  <div class="row g-3">
+    <div class="col-md-4">
+      <label class="form-label">Member</label>
+      <select class="form-select" name="memberId" required>
+        <% members.forEach(m => { %>
+          <option value="<%= m._id %>"><%= m.fullName %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Plan</label>
+      <select class="form-select" name="planId" required>
+        <% plans.forEach(p => { %>
+          <option value="<%= p._id %>"><%= p.name %> (Rs. <%= p.price %>)</option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="col-md-2"><label class="form-label">Amount</label><input class="form-control" type="number" min="0" step="0.01" name="amount" required></div>
+    <div class="col-md-2">
+      <label class="form-label">Mode</label>
+      <select class="form-select" name="mode">
+        <option value="cash">Cash</option>
+        <option value="upi">UPI</option>
+        <option value="card">Card</option>
+        <option value="online">Online</option>
+      </select>
+    </div>
+  </div>
+  <button class="btn btn-danger mt-3" type="submit">Save and download receipt</button>
+</form>
+<table class="table table-striped">
+  <thead><tr><th>Receipt</th><th>Member</th><th>Plan</th><th>Amount</th><th>Mode</th><th>Date</th></tr></thead>
+  <tbody>
+    <% payments.forEach(p => { %>
+      <tr>
+        <td><a href="/payments/<%= p._id %>/receipt"><%= p.receiptNo %></a></td>
+        <td><%= p.memberId ? p.memberId.fullName : '-' %></td>
+        <td><%= p.planId ? p.planId.name : '-' %></td>
+        <td>Rs. <%= Number(p.amount).toFixed(2) %></td>
+        <td><%= p.mode %></td>
+        <td><%= new Date(p.paidOn).toLocaleString('en-IN') %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+<%- include('../partials/adminLayoutEnd') %>

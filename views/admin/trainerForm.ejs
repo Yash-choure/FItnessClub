@@ -1,0 +1,23 @@
+<%- include('../partials/adminLayoutStart') %>
+<h1 class="h3 mb-3">Edit trainer</h1>
+<form class="card card-body" method="post" action="/admin/trainers/<%= trainer._id %>?_method=PUT">
+  <div class="row g-3">
+    <div class="col-md-6"><label class="form-label">Full name</label><input class="form-control" name="fullName" value="<%= trainer.fullName %>" required></div>
+    <div class="col-md-6"><label class="form-label">Phone</label><input class="form-control" name="phone" value="<%= trainer.phone %>" required></div>
+    <div class="col-md-6"><label class="form-label">Speciality</label><input class="form-control" name="speciality" value="<%= trainer.speciality || '' %>"></div>
+    <div class="col-md-6">
+      <label class="form-label">Shift</label>
+      <select class="form-select" name="shift">
+        <% ['morning','evening','both'].forEach(s => { %>
+          <option value="<%= s %>" <%= trainer.shift === s ? 'selected' : '' %>><%= s %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="col-12"><label class="form-label">Certification</label><input class="form-control" name="certification" value="<%= trainer.certification || '' %>"></div>
+  </div>
+  <div class="mt-3">
+    <button class="btn btn-danger" type="submit">Update trainer</button>
+    <a class="btn btn-outline-secondary" href="/admin/trainers">Cancel</a>
+  </div>
+</form>
+<%- include('../partials/adminLayoutEnd') %>

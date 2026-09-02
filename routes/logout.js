@@ -8,7 +8,8 @@ router.get('/', (req, res) => {
   req.session.successMessageDisplayed = false;
   
   req.logout(() => {
-    res.redirect('/'); // Redirect to the home page after logout
+    res.cookie('jwt', '', { maxAge: 1 });
+    res.redirect('/');
   });
 });
 

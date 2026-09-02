@@ -1,0 +1,26 @@
+<%- include('../partials/adminLayoutStart') %>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Membership plans</h1>
+  <a class="btn btn-danger" href="/admin/plans/new">New plan</a>
+</div>
+<table class="table table-striped">
+  <thead><tr><th>Name</th><th>Duration</th><th>Price</th><th>Features</th><th>Active</th><th></th></tr></thead>
+  <tbody>
+    <% plans.forEach(p => { %>
+      <tr>
+        <td><%= p.name %></td>
+        <td><%= p.durationDays %> days</td>
+        <td>Rs. <%= Number(p.price).toFixed(2) %></td>
+        <td><%= (p.features || []).join(', ') %></td>
+        <td><%= p.isActive ? 'Yes' : 'No' %></td>
+        <td class="text-end">
+          <a class="btn btn-sm btn-outline-secondary" href="/admin/plans/<%= p._id %>/edit">Edit</a>
+          <form class="d-inline" method="post" action="/admin/plans/<%= p._id %>?_method=DELETE" onsubmit="return confirm('Deactivate or delete this plan?');">
+            <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+<%- include('../partials/adminLayoutEnd') %>

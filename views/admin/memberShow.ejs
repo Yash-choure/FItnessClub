@@ -1,0 +1,64 @@
+<%- include('../partials/adminLayoutStart') %>
+<h1 class="h3 mb-3"><%= member.fullName %></h1>
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card">
+      <img src="<%= member.photoUrl %>" class="card-img-top" alt="">
+      <div class="card-body">
+        <p class="mb-1"><strong>Phone:</strong> <%= member.phone %></p>
+        <p class="mb-1"><strong>Login:</strong> <%= member.userId ? member.userId.username : '-' %></p>
+        <p class="mb-1"><strong>Valid till:</strong> <%= new Date(member.validTill).toLocaleDateString('en-IN') %></p>
+        <p class="mb-0"><strong>Status:</strong> <%= member.status %></p>
+        <p class="mb-1 mt-2"><strong>Emergency:</strong> <%= member.emergencyContactName || '-' %> <%= member.emergencyContactPhone || '' %></p>
+        <p class="mb-0"><strong>Goals:</strong> <%= member.fitnessGoals || '-' %></p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <form class="card card-body" method="post" action="/admin/members/<%= member._id %>?_method=PUT">
+      <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">Full name</label><input class="form-control" name="fullName" value="<%= member.fullName %>"></div>
+        <div class="col-md-6"><label class="form-label">Phone</label><input class="form-control" name="phone" value="<%= member.phone %>"></div>
+        <div class="col-md-6">
+          <label class="form-label">Status</label>
+          <select class="form-select" name="status">
+            <% ['active','frozen','expired'].forEach(s => { %>
+              <option value="<%= s %>" <%= member.status === s ? 'selected' : '' %>><%= s %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Gender</label>
+          <select class="form-select" name="gender">
+            <% ['M','F','O'].forEach(g => { %>
+              <option value="<%= g %>" <%= member.gender === g ? 'selected' : '' %>><%= g %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Plan</label>
+          <select class="form-select" name="planId">
+            <% plans.forEach(p => { %>
+              <option value="<%= p._id %>" <%= String(member.planId && member.planId._id) === String(p._id) ? 'selected' : '' %>><%= p.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Trainer</label>
+          <select class="form-select" name="trainerId">
+            <option value="">Unassigned</option>
+            <% trainers.forEach(t => { %>
+              <option value="<%= t._id %>" <%= String(member.trainerId && member.trainerId._id) === String(t._id) ? 'selected' : '' %>><%= t.fullName %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="col-md-6"><label class="form-label">Emergency contact name</label><input class="form-control" name="emergencyContactName" value="<%= member.emergencyContactName || '' %>"></div>
+        <div class="col-md-6"><label class="form-label">Emergency contact phone</label><input class="form-control" name="emergencyContactPhone" value="<%= member.emergencyContactPhone || '' %>"></div>
+        <div class="col-12"><label class="form-label">Fitness goals</label><textarea class="form-control" name="fitnessGoals" rows="2"><%= member.fitnessGoals || '' %></textarea></div>
+        <div class="col-12"><label class="form-label">Address</label><textarea class="form-control" name="address" rows="2"><%= member.address || '' %></textarea></div>
+      </div>
+      <button class="btn btn-danger mt-3" type="submit">Update member</button>
+    </form>
+  </div>
+</div>
+<%- include('../partials/adminLayoutEnd') %>

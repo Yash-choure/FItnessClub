@@ -1,0 +1,15 @@
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.querySelectorAll('form').forEach(function (form) {
+    if (!form.querySelector('input[name="_csrf"]')) {
+      var input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = '_csrf';
+      input.value = '<%= typeof csrfToken !== "undefined" ? csrfToken : "" %>';
+      form.appendChild(input);
+    }
+  });
+</script>
+</body>
+</html>

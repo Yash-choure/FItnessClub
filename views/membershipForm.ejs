@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="../img/logo.png" type="image/jpg">
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/membership.css">
+    <link rel="shortcut icon" href="/img/logo.png" type="image/jpg">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/membership.css">
     <script src="https://kit.fontawesome.com/73c17b3c10.js" crossorigin="anonymous"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <title>Join Us | Fitness Club</title>
@@ -35,7 +35,7 @@
             <div class="left-side" data-aos="fade-right">
                 <% if (membershipType === 'basic') { %>
                 <div class="contactimage">
-                    <img src="../img/basic.jpg" alt="">
+                    <img src="/img/basic.jpg" alt="">
                 </div>
                 <div class="contactinfo">
                     <h2>Basic Membership</h2>
@@ -45,7 +45,7 @@
                 </div>
                 <% } else if (membershipType === 'zumbastic') { %>
                     <div class="contactimage">
-                        <img src="../img/zumbastic.jpg" alt="">
+                        <img src="/img/zumbastic.jpg" alt="">
                     </div>
                     <div class="contactinfo">
                         <h2>Zumbastic Membership</h2>
@@ -55,7 +55,7 @@
                     </div>
                     <% } else if (membershipType === 'yogastic') { %>
                         <div class="contactimage">
-                            <img src="../img/yogastic.jpg" alt="">
+                            <img src="/img/yogastic.jpg" alt="">
                         </div>
                         <div class="contactinfo">
                             <h2>Yogastic Membership</h2>
@@ -65,7 +65,7 @@
                         </div>
                     <% } else if (membershipType === 'elite') { %>
                         <div class="contactimage">
-                            <img src="../img/elite.jpg" alt="">
+                            <img src="/img/elite.jpg" alt="">
                         </div>
                         <div class="contactinfo">
                             <h2>Elite Membership</h2>
@@ -75,7 +75,7 @@
                         </div>
                     <% } else if (membershipType === 'platinum') { %>
                         <div class="contactimage">
-                            <img src="../img/platinum.jpg" alt="">
+                            <img src="/img/platinum.jpg" alt="">
                         </div>
                         <div class="contactinfo">
                             <h2>Platinum Membership</h2>
@@ -85,7 +85,7 @@
                         </div>
                     <% } else if (membershipType === 'private-trainer') { %>
                         <div class="contactimage">
-                            <img src="../img/personal_trainer.jpg" alt="">
+                            <img src="/img/personal_trainer.jpg" alt="">
                         </div>
                         <div class="contactinfo">
                             <h2>Private Trainer</h2>
@@ -102,10 +102,10 @@
                     <div class="topic-text" style="font-size: 28px;">Please fill this form.</div>
                     <form action="/membershipform" method="POST">
                         <div class="input-box sinput-box">
-                            <input type="text" placeholder="Your name" name='name' required>
+                            <input type="text" placeholder="Your name" name='name' required value="<%= user ? [user.firstName, user.lastName].filter(Boolean).join(' ') : '' %>">
                         </div>
                         <div class="input-box sinput-box">
-                            <input type="email" placeholder="Your email" name='email' required>
+                            <input type="email" placeholder="Your email" name='email' required value="<%= user && user.email || '' %>">
                         </div>
                         <div class="input-box sinput-box">
                             <input type="text" placeholder="Your phone" pattern="[0-9]{10}" name='phone' required>
@@ -147,11 +147,15 @@
 
     <%- include('partials/footer', { activePage: '' }) %>
 
-    <script src="./js/jquery.min.js"></script>
-    <script src="./js/scripts.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/scripts.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init();
+        window.addEventListener('load', function () {
+            var pre = document.getElementById('preloader');
+            if (pre) pre.style.display = 'none';
+        });
     </script>
 </body>
 </html>

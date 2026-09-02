@@ -1,0 +1,42 @@
+<%- include('../partials/adminLayoutStart') %>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Registered users</h1>
+  <a class="btn btn-danger" href="/admin/members/new">Register member</a>
+</div>
+<p class="text-muted">Accounts created from website signup and admin registration (users collection).</p>
+<div class="table-responsive">
+  <table class="table table-striped align-middle">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Joined</th>
+        <th>Member profile</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (!users.length) { %>
+        <tr><td colspan="6" class="text-muted">No users found.</td></tr>
+      <% } %>
+      <% users.forEach(u => { const m = memberByUser[String(u._id)]; %>
+        <tr>
+          <td><%= u.username %></td>
+          <td><%= [u.firstName, u.lastName].filter(Boolean).join(' ') || '-' %></td>
+          <td><%= u.email %></td>
+          <td><span class="badge text-bg-<%= u.role === 'admin' ? 'warning' : (u.role === 'trainer' ? 'info' : 'success') %>"><%= u.role %></span></td>
+          <td><%= u.createdAt ? new Date(u.createdAt).toLocaleString('en-IN') : '-' %></td>
+          <td>
+            <% if (m) { %>
+              <a href="/admin/members/<%= m._id %>"><%= m.status %></a>
+            <% } else { %>
+              —
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/adminLayoutEnd') %>

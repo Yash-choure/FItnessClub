@@ -1,0 +1,24 @@
+<%- include('../partials/adminLayoutStart') %>
+<h1 class="h3 mb-3">Audit log</h1>
+<p class="text-muted">Administrative state-changing actions (FR-10).</p>
+<div class="table-responsive">
+  <table class="table table-sm table-striped">
+    <thead><tr><th>When</th><th>Actor</th><th>Role</th><th>Action</th><th>Entity</th><th>Details</th></tr></thead>
+    <tbody>
+      <% if (!logs.length) { %>
+        <tr><td colspan="6" class="text-muted">No audit entries yet.</td></tr>
+      <% } %>
+      <% logs.forEach(l => { %>
+        <tr>
+          <td><%= new Date(l.createdAt).toLocaleString('en-IN') %></td>
+          <td><%= l.actorId ? l.actorId.username : '-' %></td>
+          <td><%= l.actorRole %></td>
+          <td><%= l.action %></td>
+          <td><%= l.entity %> <%= l.entityId || '' %></td>
+          <td><%= l.details || '' %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/adminLayoutEnd') %>

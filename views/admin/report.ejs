@@ -1,0 +1,66 @@
+<%- include('../partials/adminLayoutStart') %>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0"><%= title %></h1>
+  <div>
+    <a class="btn btn-outline-primary" href="?export=csv">Export CSV</a>
+    <button class="btn btn-outline-secondary" onclick="window.print()">Print</button>
+  </div>
+</div>
+<div class="table-responsive">
+  <% if (reportType === 'active') { %>
+    <table class="table table-bordered">
+      <thead><tr><th>Name</th><th>Plan</th><th>Trainer</th><th>Valid till</th></tr></thead>
+      <tbody>
+        <% rows.forEach(r => { %>
+          <tr>
+            <td><%= r.fullName %></td>
+            <td><%= r.planName || '-' %></td>
+            <td><%= r.trainerName || 'Unassigned' %></td>
+            <td><%= r.validTill ? new Date(r.validTill).toLocaleDateString('en-IN') : '-' %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } else if (reportType === 'dues') { %>
+    <table class="table table-bordered">
+      <thead><tr><th>Name</th><th>Valid till</th><th>Days overdue</th><th>Status</th></tr></thead>
+      <tbody>
+        <% rows.forEach(r => { %>
+          <tr>
+            <td><%= r.fullName %></td>
+            <td><%= r.validTill ? new Date(r.validTill).toLocaleDateString('en-IN') : '-' %></td>
+            <td><%= r.daysOverdue %></td>
+            <td><%= r.status %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } else if (reportType === 'revenue') { %>
+    <table class="table table-bordered">
+      <thead><tr><th>Month</th><th>Payments</th><th>Total revenue</th></tr></thead>
+      <tbody>
+        <% rows.forEach(r => { %>
+          <tr>
+            <td><%= r._id.month %>/<%= r._id.year %></td>
+            <td><%= r.count %></td>
+            <td>Rs. <%= Number(r.total).toFixed(2) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } else { %>
+    <p>Unassigned active members: <strong><%= extra && extra.unassigned %></strong></p>
+    <table class="table table-bordered">
+      <thead><tr><th>Trainer</th><th>Active members</th></tr></thead>
+      <tbody>
+        <% rows.forEach(r => { %>
+          <tr>
+            <td><%= r.trainer ? r.trainer.fullName : 'Unknown' %></td>
+            <td><%= r.count %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+<%- include('../partials/adminLayoutEnd') %>

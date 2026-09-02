@@ -1,0 +1,11 @@
+<%- include('../partials/adminLayoutStart') %>
+<h1 class="h3 mb-3"><%= plan ? 'Edit plan' : 'New plan' %></h1>
+<form class="card card-body" method="post" action="<%= plan ? '/admin/plans/' + plan._id + '?_method=PUT' : '/admin/plans' %>">
+  <div class="mb-3"><label class="form-label">Name</label><input class="form-control" name="name" value="<%= plan ? plan.name : '' %>" required></div>
+  <div class="mb-3"><label class="form-label">Duration (days)</label><input class="form-control" type="number" min="1" name="durationDays" value="<%= plan ? plan.durationDays : 30 %>" required></div>
+  <div class="mb-3"><label class="form-label">Price (Rs.)</label><input class="form-control" type="number" min="0" step="0.01" name="price" value="<%= plan ? plan.price : 0 %>" required></div>
+  <div class="mb-3"><label class="form-label">Features (comma separated)</label><input class="form-control" name="features" value="<%= plan ? (plan.features || []).join(', ') : '' %>"></div>
+  <button class="btn btn-danger" type="submit">Save</button>
+  <a class="btn btn-outline-secondary" href="/admin/plans">Cancel</a>
+</form>
+<%- include('../partials/adminLayoutEnd') %>

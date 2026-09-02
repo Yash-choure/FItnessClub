@@ -49,8 +49,18 @@ router.post('/', ensureAuthenticated, async (req, res) => {
       endDate: -1,
     });
 
-    await newMembership.save();
-    res.redirect('/membershipdetails'); // Redirect to the membershipdetails page or wherever you want
+    const { applyMembershipToUser } = require('../utils/applyMembership');
+    await applyMembershipToUser(req.user, {
+      name,
+      email,
+      phone,
+      address,
+      additionalComments,
+      preferredCommunication,
+      startDate,
+      membershipType: newMembershipType,
+    });
+    res.redirect('/membershipdetails');
   } catch (error) {
     console.error(error);
     req.flash('error', 'Error creating new membership');

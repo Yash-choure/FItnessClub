@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | OGMMS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="/members/dashboard">OGMMS Member</a>
+    <div class="navbar-nav ms-auto">
+      <a class="nav-link" href="/">Public site</a>
+      <a class="nav-link" href="/membershipdetails">Website membership</a>
+      <a class="nav-link text-warning" href="/auth/logout">Logout</a>
+    </div>
+  </div>
+</nav>
+<main class="container py-4">
+  <% if (typeof success_msg !== 'undefined' && success_msg && success_msg.length) { %>
+    <div class="alert alert-success"><%= success_msg %></div>
+  <% } %>
+  <% if (typeof error_msg !== 'undefined' && error_msg && error_msg.length) { %>
+    <div class="alert alert-danger"><%= error_msg %></div>
+  <% } %>
+  <h1 class="h3 mb-4">My gym dashboard</h1>
+  <% if (!member) { %>
+    <div class="alert alert-warning">No member profile is linked to this login yet. Ask the front desk to register you.</div>
+  <% } else { %>
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <div class="card stat-card"><div class="card-body">
+          <div class="text-muted">Plan</div>
+          <div class="fs-4 fw-bold"><%= member.planId ? member.planId.name : 'None' %></div>
+        </div></div>
+      </div>
+      <div class="col-md-4">
+        <div class="card stat-card"><div class="card-body">
+          <div class="text-muted">Status / valid till</div>
+          <div class="fs-5 fw-bold"><%= member.status %></div>
+          <small><%= member.validTill ? new Date(member.validTill).toLocaleDateString('en-IN') : '-' %>
+            <% if (daysLeft !== null) { %>(<%= daysLeft %> days)<% } %></small>
+        </div></div>
+      </div>
+      <div class="col-md-4">
+        <div class="card stat-card"><div class="card-body">
+          <div class="text-muted">Assigned trainer</div>
+          <div class="fs-5 fw-bold"><%= member.trainerId ? member.trainerId.fullName : 'Unassigned' %></div>
+        </div></div>
+      </div>
+    </div>
+    <div class="card mb-4">
+      <div class="card-body">
+        <p class="mb-1"><strong>Name:</strong> <%= member.fullName %></p>
+        <p class="mb-1"><strong>Emergency contact:</strong> <%= member.emergencyContactName || '-' %> <%= member.emergencyContactPhone || '' %></p>
+        <p class="mb-0"><strong>Fitness goals:</strong> <%= member.fitnessGoals || '-' %></p>
+      </div>
+    </div>
+    <h2 class="h5">Payment history</h2>
+    <table class="table table-striped">
+      <thead><tr><th>Receipt</th><th>Plan</th><th>Amount</th><th>Date</th><th></th></tr></thead>
+      <tbody>
+        <% if (!payments.length) { %>
+          <tr><td colspan="5" class="text-muted">No payments yet.</td></tr>
+        <% } %>
+        <% payments.forEach(p => { %>
+          <tr>
+            <td><%= p.receiptNo %></td>
+            <td><%= p.planId ? p.planId.name : '-' %></td>
+            <td>Rs. <%= Number(p.amount).toFixed(2) %></td>
+            <td><%= new Date(p.paidOn).toLocaleString('en-IN') %></td>
+            <td>
+              <a href="/payments/<%= p._id %>/receipt">PDF</a>
+              · <a href="/payments/receipt/<%= p.receiptNo %>">By number</a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</main>
+</body>
+</html>

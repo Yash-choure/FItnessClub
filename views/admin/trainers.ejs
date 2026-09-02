@@ -1,0 +1,80 @@
+<%- include('../partials/adminLayoutStart') %>
+<h1 class="h3 mb-3">Trainers</h1>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <table class="table table-striped">
+      <thead><tr><th>Name</th><th>Speciality</th><th>Shift</th><th>Load</th><th></th></tr></thead>
+      <tbody>
+        <% trainers.forEach(t => { %>
+          <tr>
+            <td><%= t.fullName %></td>
+            <td><%= t.speciality %></td>
+            <td><%= t.shift %></td>
+            <td><%= t.load %> / <%= t.cap %></td>
+            <td><a href="/admin/trainers/<%= t._id %>/edit">Edit</a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <h2 class="h5 mt-4">Assign trainer</h2>
+    <form class="row g-2 align-items-end" id="assignForm">
+      <div class="col-md-5">
+        <label class="form-label">Trainer</label>
+        <select class="form-select" id="trainerId" required>
+          <% trainers.forEach(t => { %>
+            <option value="<%= t._id %>"><%= t.fullName %> (<%= t.load %>/<%= t.cap %>)</option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label">Member</label>
+        <select class="form-select" id="memberId" required>
+          <% members.forEach(m => { %>
+            <option value="<%= m._id %>"><%= m.fullName %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-danger w-100" type="submit">Assign</button>
+      </div>
+    </form>
+  </div>
+  <div class="col-lg-5">
+    <form class="card card-body" method="post" action="/admin/trainers">
+      <h2 class="h5">Add trainer</h2>
+      <div class="mb-2"><input class="form-control" name="username" placeholder="Username" required minlength="4"></div>
+      <div class="mb-2"><input class="form-control" type="email" name="email" placeholder="Email" required></div>
+      <div class="mb-2"><input class="form-control" type="password" name="password" placeholder="Password" required minlength="6"></div>
+      <div class="mb-2"><input class="form-control" name="fullName" placeholder="Full name" required></div>
+      <div class="mb-2"><input class="form-control" name="phone" placeholder="Phone" required></div>
+      <div class="mb-2"><input class="form-control" name="speciality" placeholder="Speciality (yoga, cardio...)"></div>
+      <div class="mb-2">
+        <select class="form-select" name="shift">
+          <option value="morning">Morning</option>
+          <option value="evening">Evening</option>
+          <option value="both">Both</option>
+        </select>
+      </div>
+      <div class="mb-2"><input class="form-control" name="certification" placeholder="Certification"></div>
+      <button class="btn btn-danger" type="submit">Create trainer</button>
+    </form>
+  </div>
+</div>
+<script>
+  document.getElementById('assignForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const t = document.getElementById('trainerId').value;
+    const m = document.getElementById('memberId').value;
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/admin/trainers/' + t + '/assign/' + m;
+    const csrf = document.createElement('input');
+    csrf.type = 'hidden';
+    csrf.name = '_csrf';
+    csrf.value = '<%= typeof csrfToken !== "undefined" ? csrfToken : "" %>';
+    form.appendChild(csrf);
+    document.body.appendChild(form);
+    form.submit();
+  });
+</script>
+<%- include('../partials/adminLayoutEnd') %>

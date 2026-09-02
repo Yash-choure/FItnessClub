@@ -1,0 +1,46 @@
+<%- include('../partials/adminLayoutStart') %>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Members</h1>
+  <a class="btn btn-danger" href="/admin/members/new">Register member</a>
+</div>
+<div class="table-responsive">
+  <table class="table table-striped align-middle">
+    <thead>
+      <tr>
+        <th>Photo</th>
+        <th>Name</th>
+        <th>Username / Email</th>
+        <th>Phone</th>
+        <th>Plan</th>
+        <th>Trainer</th>
+        <th>Valid till</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (!members.length) { %>
+        <tr><td colspan="8" class="text-muted">No members registered yet.</td></tr>
+      <% } %>
+      <% members.forEach(m => { %>
+        <tr>
+          <td><img src="<%= m.photoUrl %>" alt="" width="40" height="40" class="rounded-circle object-fit-cover"></td>
+          <td><a href="/admin/members/<%= m._id %>"><%= m.fullName %></a></td>
+          <td>
+            <%= m.userId ? m.userId.username : '-' %><br>
+            <small><%= m.userId ? m.userId.email : '' %></small>
+          </td>
+          <td><%= m.phone %></td>
+          <td><%= m.planId ? m.planId.name : '-' %></td>
+          <td><%= m.trainerId ? m.trainerId.fullName : 'Unassigned' %></td>
+          <td><%= new Date(m.validTill).toLocaleDateString('en-IN') %></td>
+          <td>
+            <span class="badge text-bg-<%= m.status === 'active' ? 'success' : (m.status === 'frozen' ? 'secondary' : 'warning') %>">
+              <%= m.status %><%= m.isExpired ? ' / overdue' : '' %>
+            </span>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/adminLayoutEnd') %>

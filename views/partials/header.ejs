@@ -61,12 +61,22 @@
                 <li><a href="/trainers" class="<%= activePage === 'trainers' ? 'active' : '' %>">TRAINERS</a></li>
                 <li><a href="/pricing" class="<%= activePage === 'pricing' ? 'active' : '' %>">PRICING</a></li>
                 <li><a href="/contact" class="<%= activePage === 'contact' ? 'active' : '' %>">CONTACT</a></li>
-                <% if (authenticated) { %>
+                <% if (typeof user !== 'undefined' && user && user.role === 'admin') { %>
+                    <li><a href="/admin/dashboard">ADMIN</a></li>
+                <% } %>
+                <% if (typeof user !== 'undefined' && user && user.role === 'member') { %>
+                    <li><a href="/members/dashboard">MY GYM</a></li>
+                <% } %>
+                <% if (typeof user !== 'undefined' && user && user.role === 'trainer') { %>
+                    <li><a href="/trainers/dashboard">MY ROSTER</a></li>
+                <% } %>
+                <% if (authenticated || (typeof user !== 'undefined' && user)) { %>
                     <li><a href="/membershipdetails" class="<%= activePage === 'membership' ? 'active' : '' %>">MEMBERSHIP</a></li>
                     <li><a href="/profile" class="<%= activePage === 'profile' ? 'active' : '' %>">PROFILE</a></li>
                     <li><a href="/logout" class="<%= activePage === 'login' ? 'login-link active' : 'login-link' %>">Log Out <i class="fa-solid fa-right-from-bracket"></i></a></li>
                 <% } else { %>
                     <li><a href="/login" class="<%= activePage === 'login' ? 'login-link active' : 'login-link' %>">LogIn / SignUp</a></li>
+                    <li><a href="/auth/login" class="login-link">Staff</a></li>
                 <% } %>
             </ul>
         </div>

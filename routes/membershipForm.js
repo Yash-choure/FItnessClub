@@ -2,59 +2,53 @@ const express = require('express');
 const router = express.Router();
 const { ensureAuthenticated } = require('../middlewares/authMiddleware');
 const Membership = require('../models/memberships');
+const { applyMembershipToUser } = require('../utils/applyMembership');
+const { SITE_PLANS } = require('../utils/sitePlans');
 
 router.get('/:membershipType', ensureAuthenticated, async (req, res) => {
   try {
-    // Check if the user already has a membership
     const existingMembership = await Membership.findOne({ user: req.user._id });
-
     if (existingMembership) {
-      // Redirect to another page, e.g., membershipdetails
       return res.redirect('/membershipdetails');
     }
 
-    // Continue rendering the membership form if no existing membership
     const membershipType = req.params.membershipType;
-    res.render('membershipForm', { membershipType, authenticated: req.isAuthenticated() });
+    if (!SITE_PLANS[membershipType]) {
+      req.flash('error', 'Please choose a valid membership.');
+      return res.redirect('/pricing');
+    }
+
+    res.render('membershipForm', {
+      membershipType,
+      authenticated: req.isAuthenticated(),
+      user: req.user,
+    });
   } catch (error) {
     console.error(error);
-    // Handle the error, e.g., redirect to an error page
-    res.redirect('/error');
+    res.redirect('/pricing');
   }
 });
 
 router.post('/', ensureAuthenticated, async (req, res) => {
   try {
-    // Check if the user already has a membership
     const existingMembership = await Membership.findOne({ user: req.user._id });
-
     if (existingMembership) {
-      // Redirect to another page, e.g., membershipdetails
       return res.redirect('/membershipdetails');
     }
 
-    // Continue processing the form submission if no existing membership
-    const { name, email, phone, address, preferredCommunication, additionalComments, membershipType, startDate } = req.body;
-    
-    const newMembership = new Membership({
-      user: req.user._id,
-      name,
-      email,
-      phone,
-      address,
-      preferredCommunication,
-      additionalComments,
-      membershipType,
-      startDate,
-      endDate: -1,
-    });
+    const membershipType = req.body.membershipType;
+    if (!SITE_PLANS[membershipType]) {
+      req.flash('error', 'Please choose a valid membership.');
+      return res.redirect('/pricing');
+    }
 
-    await newMembership.save();
-    res.redirect('/membershipdetails'); // Redirect to the user's profile page or wherever you want
+    await applyMembershipToUser(req.user, req.body);
+    req.flash('success', 'Membership added to your account.');
+    res.redirect('/membershipdetails');
   } catch (error) {
     console.error(error);
     req.flash('error', 'Error submitting membership form');
-    res.redirect(`/membershipform/${req.params.membershipType}`); // Redirect to an error page or handle it based on your needs
+    res.redirect(`/membershipform/${req.body.membershipType || 'basic'}`);
   }
 });
 

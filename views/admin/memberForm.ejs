@@ -1,0 +1,38 @@
+<%- include('../partials/adminLayoutStart') %>
+<h1 class="h3 mb-3">Register member</h1>
+<form action="/admin/members" method="post" enctype="multipart/form-data" class="card card-body">
+  <div class="row g-3">
+    <div class="col-md-6"><label class="form-label">Username</label><input class="form-control" name="username" required minlength="4"></div>
+    <div class="col-md-6"><label class="form-label">Email</label><input class="form-control" type="email" name="email" required></div>
+    <div class="col-md-6"><label class="form-label">Password</label><input class="form-control" type="password" name="password" required minlength="6"></div>
+    <div class="col-md-6"><label class="form-label">Full name</label><input class="form-control" name="fullName" required></div>
+    <div class="col-md-4"><label class="form-label">Phone (10 digits)</label><input class="form-control" name="phone" required pattern="\d{10}"></div>
+    <div class="col-md-4"><label class="form-label">Date of birth</label><input class="form-control" type="date" name="dob" required></div>
+    <div class="col-md-4">
+      <label class="form-label">Gender</label>
+      <select class="form-select" name="gender" required>
+        <option value="M">Male</option>
+        <option value="F">Female</option>
+        <option value="O">Other</option>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Plan</label>
+      <select class="form-select" name="planId" required>
+        <% plans.forEach(p => { %>
+          <option value="<%= p._id %>"><%= p.name %> — Rs. <%= p.price %> / <%= p.durationDays %> days</option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="col-md-6"><label class="form-label">Photo</label><input class="form-control" type="file" name="photo" accept="image/*"></div>
+    <div class="col-md-6"><label class="form-label">Emergency contact name</label><input class="form-control" name="emergencyContactName"></div>
+    <div class="col-md-6"><label class="form-label">Emergency contact phone</label><input class="form-control" name="emergencyContactPhone"></div>
+    <div class="col-12"><label class="form-label">Fitness goals</label><textarea class="form-control" name="fitnessGoals" rows="2"></textarea></div>
+    <div class="col-12"><label class="form-label">Address</label><textarea class="form-control" name="address" rows="2"></textarea></div>
+  </div>
+  <div class="mt-3">
+    <button class="btn btn-danger" type="submit">Save member</button>
+    <a class="btn btn-outline-secondary" href="/admin/members">Cancel</a>
+  </div>
+</form>
+<%- include('../partials/adminLayoutEnd') %>

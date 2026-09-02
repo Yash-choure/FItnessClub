@@ -3,6 +3,7 @@ const router = express.Router();
 const { ensureAuthenticated } = require('../middlewares/authMiddleware');
 const Membership = require('../models/memberships');
 const SaunaSession = require('../models/saunaSession');
+const Member = require('../models/Member');
 
 router.get('/', ensureAuthenticated, async (req, res) => {
   try {
@@ -11,12 +12,13 @@ router.get('/', ensureAuthenticated, async (req, res) => {
 
     // Find the membership details for the logged-in user
     const membershipDetail = await Membership.find({ user: user._id }).sort({ createdAt: -1 }).exec();
+    const gymMember = await Member.findOne({ userId: user._id }).populate('planId').lean();
 
     // Find all sauna session details for the logged-in user
     const saunaAppointments = await SaunaSession.find({ user: user._id }).sort({ createdAt: -1 }).exec();
 
     // Set the variable to handle the logic
-    const hasMembership = !!membershipDetail;
+    const hasMembership = membershipDetail.length > 0;
 
     // Check if the success message has already been displayed
     const successMessageDisplayed = req.session.successMessageDisplayed || false;
@@ -30,6 +32,7 @@ router.get('/', ensureAuthenticated, async (req, res) => {
     // Pass the membershipDetails, saunaAppointments, and hasMembership variables to the view
     res.render('membershipdetails', {
       membershipDetail,
+      gymMember,
       saunaAppointments,
       hasMembership,
       user,
@@ -42,7 +45,11 @@ router.get('/', ensureAuthenticated, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.render('membershipdetails', {
-      user,
+      user: req.user,
+      membershipDetail: [],
+      gymMember: null,
+      saunaAppointments: [],
+      hasMembership: false,
       authenticated: req.isAuthenticated(),
       error: 'Error retrieving membership details and sauna appointments',
     });

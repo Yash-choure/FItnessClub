@@ -33,6 +33,10 @@
             <h3>Hi <%= user.firstName %>,</h3>
             <p><span></span> <i class="fa-solid fa-dumbbell"></i> <span></span></p>
             <h4>Here's your membership and/or any sauna appointment details.</h4>
+            <% if (typeof gymMember !== 'undefined' && gymMember && gymMember.planId) { %>
+                <p style="margin-top: 12px;">Current plan on your account: <strong><%= gymMember.planId.name %></strong>
+                (status: <%= gymMember.status %>, valid till <%= gymMember.validTill ? new Date(gymMember.validTill).toLocaleDateString() : '-' %>)</p>
+            <% } %>
         </div>
         <div class="content">
             <% if (hasMembership) { %>
@@ -56,10 +60,11 @@
                                         </div>
                                         <br>
                                         <p>Status: <strong><%= membershipDetails.status %></strong></p>
-                                        <p>Start Date: <%= membershipDetails.startDate.toLocaleDateString() %></strong></p>
+                                        <p>Start Date: <%= membershipDetails.startDate ? new Date(membershipDetails.startDate).toLocaleDateString() : 'To be decided' %></p>
                                         <p>End Date: 
-                                        <% if (membershipDetails.endDate.getTime() !== -1) { %>
-                                            <%= membershipDetails.endDate.toLocaleDateString() %>
+                                        <% const endA = membershipDetails.endDate ? new Date(membershipDetails.endDate) : null; %>
+                                        <% if (endA && !isNaN(endA.getTime()) && endA.getTime() > 0) { %>
+                                            <%= endA.toLocaleDateString() %>
                                         <% } else { %>
                                             To be decided.
                                         <% } %>
@@ -91,10 +96,11 @@
                                         </div>
                                         <br>
                                         <p>Status: <strong><%= membershipDetails.status %></strong></p>
-                                        <p>Start Date: <%= membershipDetails.startDate.toLocaleDateString() %></strong></p>
+                                        <p>Start Date: <%= membershipDetails.startDate ? new Date(membershipDetails.startDate).toLocaleDateString() : 'To be decided' %></p>
                                         <p>End Date: 
-                                        <% if (membershipDetails.endDate.getTime() !== -1) { %>
-                                            <%= membershipDetails.endDate.toLocaleDateString() %>
+                                        <% const endA = membershipDetails.endDate ? new Date(membershipDetails.endDate) : null; %>
+                                        <% if (endA && !isNaN(endA.getTime()) && endA.getTime() > 0) { %>
+                                            <%= endA.toLocaleDateString() %>
                                         <% } else { %>
                                             To be decided.
                                         <% } %>
@@ -126,10 +132,11 @@
                                         </div>
                                         <br>
                                         <p>Status: <strong><%= membershipDetails.status %></strong></p>
-                                        <p>Start Date: <%= membershipDetails.startDate.toLocaleDateString() %></strong></p>
+                                        <p>Start Date: <%= membershipDetails.startDate ? new Date(membershipDetails.startDate).toLocaleDateString() : 'To be decided' %></p>
                                         <p>End Date: 
-                                        <% if (membershipDetails.endDate.getTime() !== -1) { %>
-                                            <%= membershipDetails.endDate.toLocaleDateString() %>
+                                        <% const endA = membershipDetails.endDate ? new Date(membershipDetails.endDate) : null; %>
+                                        <% if (endA && !isNaN(endA.getTime()) && endA.getTime() > 0) { %>
+                                            <%= endA.toLocaleDateString() %>
                                         <% } else { %>
                                             To be decided.
                                         <% } %>
@@ -161,10 +168,11 @@
                                         </div>
                                         <br>
                                         <p>Status: <strong><%= membershipDetails.status %></strong></p>
-                                        <p>Start Date: <%= membershipDetails.startDate.toLocaleDateString() %></strong></p>
+                                        <p>Start Date: <%= membershipDetails.startDate ? new Date(membershipDetails.startDate).toLocaleDateString() : 'To be decided' %></p>
                                         <p>End Date: 
-                                        <% if (membershipDetails.endDate.getTime() !== -1) { %>
-                                            <%= membershipDetails.endDate.toLocaleDateString() %>
+                                        <% const endA = membershipDetails.endDate ? new Date(membershipDetails.endDate) : null; %>
+                                        <% if (endA && !isNaN(endA.getTime()) && endA.getTime() > 0) { %>
+                                            <%= endA.toLocaleDateString() %>
                                         <% } else { %>
                                             To be decided.
                                         <% } %>
@@ -196,10 +204,11 @@
                                         </div>
                                         <br>
                                         <p>Status: <strong><%= membershipDetails.status %></strong></p>
-                                        <p>Start Date: <%= membershipDetails.startDate.toLocaleDateString() %></strong></p>
+                                        <p>Start Date: <%= membershipDetails.startDate ? new Date(membershipDetails.startDate).toLocaleDateString() : 'To be decided' %></p>
                                         <p>End Date: 
-                                        <% if (membershipDetails.endDate.getTime() !== -1) { %>
-                                            <%= membershipDetails.endDate.toLocaleDateString() %>
+                                        <% const endA = membershipDetails.endDate ? new Date(membershipDetails.endDate) : null; %>
+                                        <% if (endA && !isNaN(endA.getTime()) && endA.getTime() > 0) { %>
+                                            <%= endA.toLocaleDateString() %>
                                         <% } else { %>
                                             To be decided.
                                         <% } %>
@@ -231,10 +240,11 @@
                                         </div>
                                         <br>
                                         <p>Status: <strong><%= membershipDetails.status %></strong></p>
-                                        <p>Start Date: <%= membershipDetails.startDate.toLocaleDateString() %></strong></p>
+                                        <p>Start Date: <%= membershipDetails.startDate ? new Date(membershipDetails.startDate).toLocaleDateString() : 'To be decided' %></p>
                                         <p>End Date: 
-                                        <% if (membershipDetails.endDate.getTime() !== -1) { %>
-                                            <%= membershipDetails.endDate.toLocaleDateString() %>
+                                        <% const endA = membershipDetails.endDate ? new Date(membershipDetails.endDate) : null; %>
+                                        <% if (endA && !isNaN(endA.getTime()) && endA.getTime() > 0) { %>
+                                            <%= endA.toLocaleDateString() %>
                                         <% } else { %>
                                             To be decided.
                                         <% } %>

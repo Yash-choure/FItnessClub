@@ -16,7 +16,7 @@ describe('Signup Endpoint', () => {
       });
 
     expect(res.statusCode).toEqual(302);
-    expect(res.headers.location).toBe('/membershipDetails');
+    expect(res.headers.location).toBe('/pricing');
   });
 
   it('should fail if passwords do not match', async () => {
