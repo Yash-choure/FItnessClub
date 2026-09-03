@@ -1,148 +1,147 @@
-![Fitness Club Website](https://i.imgur.com/LFT3241.png)
+<div align="center">
 
-<h1 align="center">Fitness Club Website 🏋️‍♂️🧘‍♀️</h1>
-<div align="center">Building a User-Friendly Fitness Club Website with Node.js</div>
+# FITNESS CLUB
 
-## Table of Contents 📋
+### A focused membership, attendance, and fitness-club management platform
 
-1. 📖 [Introduction](#introduction-)
-2. 💻 [Tech Stack](#tech-stack-)
-3. 🌟 [Features](#features-)
-4. 🚀 [QuickStart](#quickstart-)
-5. 🤝 [Contributing](#contributing-)
-6. 📜 [License](#license-)
-7. 📞 [Contact](#contact-)
+<p>
+  <a href="#getting-started"><strong>Get started</strong></a>
+  &nbsp;&bull;&nbsp;
+  <a href="#available-scripts"><strong>Run the project</strong></a>
+  &nbsp;&bull;&nbsp;
+  <a href="#testing"><strong>Run tests</strong></a>
+</p>
 
-## Introduction 📖
+![Node.js](https://img.shields.io/badge/Node.js-20%2B-1f2937?style=for-the-badge&logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-4-111827?style=for-the-badge&logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-8-047857?style=for-the-badge&logo=mongodb&logoColor=white)
+![Jest](https://img.shields.io/badge/tests-Jest-c2410c?style=for-the-badge&logo=jest&logoColor=white)
 
-This project is a website designed for Fitness Club, aiming to create a friendly and helpful platform for sharing information about its facilities, managing memberships, and connecting with customers. With easy-to-use features like finding class schedules or booking appointments with trainers, this website is designed to make your fitness journey hassle-free. Whether you're new to Fitness Club or a long-time member, we've got everything you need right here. So, let's get started and explore what Fitness Club has in store for you!
-
-## Tech Stack 💻
-
-- Frontend: HTML, CSS, JavaScript, EJS
-- Backend: Node.js, Express.js
-- Database: MongoDB
-- Testing: Jest
-- Other: Git, GitHub
-
-## Features 🌟
-
-### 1. Homepage Sections:
-
-👉 **Slider with Animation**: Engage visitors with a dynamic slider featuring captivating animations in the hero section of the homepage.
-
-👉 **Brief Description**: Concise overview highlighting Fitness Club's key features and offerings.
-
-👉 **Classes**: Information on various classes offered, including Zumba, yoga, and more, with schedules.
-
-👉 **Pricing**: Detailed pricing for memberships, steam/sauna bookings, and private trainer sessions.
-
-👉 **Trainers**: Profiles of experienced trainers, including specialties and social media links.
-
-👉 **Gallery with Lightbox**: Visually appealing section showcasing facility and class images in a lightbox format.
-
-👉 **Contact**: Easy access to contact information and a convenient contact form.
-
-👉 **Footer**: Navigation links, social media icons, and relevant details.
-
-
-### 2. Dedicated Pages:
-
-👉 **About Page**: Provide comprehensive information about Fitness Club, its history, mission, and values.
-
-👉 **Classes Page**: Offer detailed information about different types of classes available, including schedules, instructors, and class descriptions.
-
-👉 **Trainers Page**: Showcase profiles of trainers, highlighting their expertise, certifications, and achievements, along with links to their social media profiles.
-
-👉 **Pricing Page**: Present a breakdown of membership options, appointment booking options for sauna/steam, and private trainer sessions, including pricing details.
-
-👉 **Contact Page**: Display a contact form, address, and contact information, along with integrated Google Maps for easy navigation.
-
-
-### 3. Authentication 🔒:
-
-👉 **Login and Signup Page**: Provide secure login and registration functionality for users to access their accounts.
-
-
-###4. User Account Management 🧑‍💻:
-
-👉 **Membership Page**: Allow logged-in users to manage their memberships, including viewing membership details, upgrading/downgrading plans, and canceling memberships.
-
-👉 **Profile Page**: Enable users to view and edit their profile information, including personal details and preferences.
-
-👉 **Change Password Page**: Allow users to change their passwords securely for enhanced account security.
+</div>
 
 <br>
 
-## QuickStart 🚀
+## Overview
 
-### Installation 🛠️
+Fitness Club is a server-rendered web application for running the day-to-day operations of a modern gym. Members can create accounts, manage their profiles and memberships, review attendance, make payments, and book sauna sessions. Staff and administrators get dedicated dashboards for managing members, plans, trainers, payments, reports, and audit activity.
 
-1. **Clone the repository:**
+The application is built around a simple principle: keep the member experience welcoming while giving the team clear operational visibility.
 
-```bash
-git clone https://github.com/RoshisRai/FitnessClub.git
+## Capabilities
+
+| Member experience | Club operations |
+| --- | --- |
+| Account signup, login, logout, and password changes | Admin dashboard and role-based access |
+| Profile and membership management | Member, plan, trainer, and payment management |
+| Membership upgrades, changes, and cancellations | Attendance tracking and trainer dashboards |
+| Attendance history and sauna-session booking | Reports, audit logs, and expiry reminders |
+| Payments and payment confirmation pages | Member profile image uploads |
+
+The public-facing site also includes pages for the club, classes, trainers, pricing, contact, and membership information.
+
+## Built With
+
+- **Views:** EJS, HTML, CSS, and JavaScript
+- **Application server:** Node.js and Express
+- **Data layer:** MongoDB with Mongoose
+- **Authentication:** Passport Local, sessions, bcrypt, and JWT utilities
+- **Validation and security:** Joi, CSRF middleware, cookie parsing, and method override
+- **Email and documents:** Nodemailer and PDFKit
+- **Testing:** Jest, Supertest, and MongoDB Memory Server
+
+## Project Structure
+
+```text
+FitnessClub/
+├── controllers/       Request handlers and business workflows
+├── middlewares/       Authentication, CSRF, and upload middleware
+├── models/            Mongoose data models
+├── routes/            Public, member, trainer, and admin routes
+├── scripts/           Maintenance and data-seeding scripts
+├── utils/             Validation, membership, reporting, and helper logic
+├── views/             EJS pages and reusable partials
+├── public/            Stylesheets, browser scripts, and uploads
+├── server.js          Application entry point
+└── __tests__/         Jest and Supertest test suites
 ```
 
+## Getting Started
 
-2. **Navigate to the project directory:**
+### Prerequisites
+
+- Node.js 20 or later
+- npm
+- A MongoDB database, local or hosted
+
+### Installation
 
 ```bash
+git clone https://github.com/yash-choure/FitnessClub.git
 cd FitnessClub
-```
-
-3. **Install dependencies:**
-
-```bash
 npm install
 ```
 
-4. **Set up environment variables:**
-Create a .env file in the project root directory and add the following line:
+Create a `.env` file in the project root:
 
-```
-MONGODB_URI=<your-mongodb-uri>
-```
-
-Optional expiry reminder email settings can be added to `.env`: `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, and `SMTP_FROM`. When configured, the server sends reminders for memberships expiring within seven days.
-
-Need help setting up MongoDB? [Learn more here.](https://hevodata.com/learn/mongodb-atlas-nodejs/)
-
-### Usage 🚀
-
-**Start the server:**
-
-```bash
-npm run dev
+```env
+MONGODB_URI=mongodb://127.0.0.1:27017/fitnessclub
 ```
 
-Access the website at http://localhost:3000 in your browser.
+For membership expiry emails, configure the optional SMTP variables:
 
-### Testing 🧪
+```env
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-user
+SMTP_PASS=your-password
+SMTP_FROM=no-reply@example.com
+```
 
-Test cases have been implemented for signup, login, and logout functionality using Jest. To run the tests:
+Start the development server and open [http://localhost:3000](http://localhost:3000).
 
+## Available Scripts
+
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the server with Nodemon |
+| `npm start` | Start the production server |
+| `npm test` | Run the Jest test suite |
+| `npm run seed` | Seed the admin account |
+
+## Testing
+
+Run all automated tests:
 
 ```bash
 npm test
 ```
 
-## Contributing 🤝
+The suite covers authentication flows, validation, and key member-management behavior. Tests use Supertest for HTTP assertions and an in-memory MongoDB instance where database state is required.
 
-Contributions are always welcome! If you'd like to contribute, please follow these steps:
+## Configuration Notes
 
-1. Fork the repository.
-2. Create a new branch: `git checkout -b <branch_name>`.
-3. Make your changes and commit them: `git commit -m '<commit_message>'`.
-4. Push to your branch: `git push origin <branch_name>`.
-5. Create the pull request.
+- Keep `.env` out of source control and use strong credentials for production services.
+- The `public/uploads/members` directory is used for member profile uploads.
+- Configure SMTP only when automated membership expiry reminders are required.
 
-Alternatively, see the GitHub documentation on [creating a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request).
+## Contributing
 
-## License 📄
-This project is licensed under the MIT License - see the `LICENSE` file for details.
+1. Create a focused branch from the current main branch.
+2. Make the change and add or update tests where behavior changes.
+3. Run `npm test` before opening a pull request.
+4. Open a pull request with a concise description of the change.
 
-## Contact 📱
-If you have any questions or feedback, please contact me at 📧 roshis.awai@gmail.com.
+## License
 
+This project is released under the MIT License. See [LICENSE](LICENSE) for details.
 
+## Maintainer
+
+Built and maintained by **Yash Choure** (`yash-choure`).
+
+<div align="center">
+
+<sub>Fitness Club &bull; A practical foundation for healthier communities</sub>
+
+</div>
