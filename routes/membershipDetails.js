@@ -30,7 +30,7 @@ router.get('/', ensureAuthenticated, async (req, res) => {
     }
 
     // Pass the membershipDetails, saunaAppointments, and hasMembership variables to the view
-    res.render('membershipdetails', {
+    res.render('membershipDetails', {
       membershipDetail,
       gymMember,
       saunaAppointments,
@@ -44,7 +44,7 @@ router.get('/', ensureAuthenticated, async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.render('membershipdetails', {
+    res.render('membershipDetails', {
       user: req.user,
       membershipDetail: [],
       gymMember: null,
