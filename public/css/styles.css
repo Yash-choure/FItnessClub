@@ -2025,6 +2025,24 @@ a{
     padding-bottom: 5rem;
     max-width: 100%;
 }
+
+@media (prefers-reduced-motion: no-preference) {
+    .highlighted-classes .box,
+    .class-boxes .box,
+    .plan-boxes .outer-box,
+    .trainer__card,
+    .gallery-index .image {
+        transition: transform .45s ease, box-shadow .45s ease;
+    }
+
+    .highlighted-classes .box:hover,
+    .class-boxes .box:hover,
+    .plan-boxes .outer-box:hover,
+    .trainer__card:hover,
+    .gallery-index .image:hover {
+        transform: translateY(-8px);
+    }
+}
 .contact-section::before{
     content: '';
     position: absolute;

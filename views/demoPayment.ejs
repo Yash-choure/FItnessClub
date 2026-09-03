@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo Checkout | Fitness Club</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/membership.css">
+</head>
+<body>
+  <%- include('partials/header', { activePage: 'pricing', authenticated: true }) %>
+  <main class="contactcontainer" id="add-margin">
+    <div class="contact-page-header">
+      <h3>Demo Checkout</h3>
+      <p><span></span> Showcase payment screen <span></span></p>
+    </div>
+    <div class="content">
+      <div class="left-side">
+        <div class="contactinfo">
+          <h2><%= plan.name %></h2>
+          <p><%= plan.description %></p>
+          <p><strong>Demo total: Rs. <%= plan.price %></strong></p>
+        </div>
+      </div>
+      <div class="right-side">
+        <div class="right-side-container">
+          <div class="topic-text">Payment details</div>
+          <div class="alert alert-warning">Demo mode: no real payment will be processed.</div>
+          <form method="post" action="/membershipform/demo-payment">
+            <% Object.entries(formData).forEach(([key, value]) => { if (key !== 'remember') { %>
+              <input type="hidden" name="<%= key %>" value="<%= value %>">
+            <% } }) %>
+            <div class="input-box sinput-box"><input type="text" placeholder="Cardholder name" required value="<%= user.firstName %> <%= user.lastName %>"></div>
+            <div class="input-box sinput-box"><input type="text" placeholder="Card number" inputmode="numeric" pattern="[0-9 ]{12,19}" required></div>
+            <div class="input-box sinput-box"><input type="text" placeholder="MM / YY" required></div>
+            <div class="input-box sinput-box"><input type="password" placeholder="CVV" inputmode="numeric" pattern="[0-9]{3,4}" required></div>
+            <div class="button"><input type="submit" value="Complete Demo Payment"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

@@ -37,13 +37,17 @@
     </table>
   <% } else if (reportType === 'revenue') { %>
     <table class="table table-bordered">
-      <thead><tr><th>Month</th><th>Payments</th><th>Total revenue</th></tr></thead>
+      <thead><tr><th>Month</th><th>Payments</th><th>Total revenue</th><th>Cash</th><th>UPI</th><th>Card</th><th>Online</th></tr></thead>
       <tbody>
         <% rows.forEach(r => { %>
           <tr>
             <td><%= r._id.month %>/<%= r._id.year %></td>
             <td><%= r.count %></td>
             <td>Rs. <%= Number(r.total).toFixed(2) %></td>
+            <td>Rs. <%= Number(r.cash).toFixed(2) %></td>
+            <td>Rs. <%= Number(r.upi).toFixed(2) %></td>
+            <td>Rs. <%= Number(r.card).toFixed(2) %></td>
+            <td>Rs. <%= Number(r.online).toFixed(2) %></td>
           </tr>
         <% }) %>
       </tbody>

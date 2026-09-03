@@ -24,7 +24,7 @@ module.exports.login_post = async (req, res) => {
     if (!isMatch) throw new Error('Invalid credentials.');
 
     const token = createToken(user._id, user.role);
-    res.cookie('jwt', token, { httpOnly: true, maxAge: JWT_EXPIRY * 1000, sameSite: 'lax' });
+    res.cookie('jwt', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: JWT_EXPIRY * 1000, sameSite: 'lax' });
 
     const redirectMap = {
       admin: '/admin/dashboard',

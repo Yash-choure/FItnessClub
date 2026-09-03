@@ -22,7 +22,7 @@ function verifyCsrf(req, res, next) {
     return next();
   }
   const contentType = req.get('content-type') || '';
-  if (contentType.includes('multipart/form-data')) {
+  if (contentType.includes('multipart/form-data') && !req.body?._csrf && !req.get('x-csrf-token')) {
     return next();
   }
   const token = (req.body && req.body._csrf) || req.get('x-csrf-token');

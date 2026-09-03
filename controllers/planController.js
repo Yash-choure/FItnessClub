@@ -1,6 +1,6 @@
 const Plan = require('../models/Plan');
 const Member = require('../models/Member');
-const { planSchema } = require('../utils/validators');
+const { planSchema, planUpdateSchema } = require('../utils/validators');
 const { logAudit } = require('../utils/auditLog');
 
 module.exports.list_get = async (req, res) => {
@@ -51,7 +51,9 @@ module.exports.edit_get = async (req, res) => {
 
 module.exports.update_put = async (req, res) => {
   try {
-    const { name, durationDays, price, features } = req.body;
+    const { error, value } = planUpdateSchema.validate(req.body, { abortEarly: false, stripUnknown: true });
+    if (error) throw new Error(error.details.map((d) => d.message).join(', '));
+    const { name, durationDays, price, features } = value;
     const featureList = String(features || '')
       .split(',')
       .map((f) => f.trim())
@@ -79,9 +81,9 @@ module.exports.delete_delete = async (req, res) => {
       await logAudit(req, { action: 'soft-delete', entity: 'Plan', entityId: req.params.id });
       req.flash('success_msg', 'Plan is in use and was deactivated (soft-delete).');
     } else {
-      await Plan.findByIdAndDelete(req.params.id);
-      await logAudit(req, { action: 'delete', entity: 'Plan', entityId: req.params.id });
-      req.flash('success_msg', 'Plan deleted.');
+      await Plan.findByIdAndUpdate(req.params.id, { isActive: false });
+      await logAudit(req, { action: 'soft-delete', entity: 'Plan', entityId: req.params.id });
+      req.flash('success_msg', 'Plan deactivated.');
     }
     res.redirect('/admin/plans');
   } catch (err) {

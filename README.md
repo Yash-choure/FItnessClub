@@ -104,6 +104,8 @@ Create a .env file in the project root directory and add the following line:
 MONGODB_URI=<your-mongodb-uri>
 ```
 
+Optional expiry reminder email settings can be added to `.env`: `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, and `SMTP_FROM`. When configured, the server sends reminders for memberships expiring within seven days.
+
 Need help setting up MongoDB? [Learn more here.](https://hevodata.com/learn/mongodb-atlas-nodejs/)
 
 ### Usage 🚀

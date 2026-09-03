@@ -14,11 +14,12 @@
         <th>Role</th>
         <th>Joined</th>
         <th>Member profile</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
       <% if (!users.length) { %>
-        <tr><td colspan="6" class="text-muted">No users found.</td></tr>
+        <tr><td colspan="7" class="text-muted">No users found.</td></tr>
       <% } %>
       <% users.forEach(u => { const m = memberByUser[String(u._id)]; %>
         <tr>
@@ -32,6 +33,15 @@
               <a href="/admin/members/<%= m._id %>"><%= m.status %></a>
             <% } else { %>
               —
+            <% } %>
+          </td>
+          <td>
+            <% if (String(u._id) === String((user && user.id) || '')) { %>
+              <span class="text-muted">Current account</span>
+            <% } else { %>
+              <form method="post" action="/admin/users/<%= u._id %>?_method=DELETE" onsubmit="return confirm('Delete this user and linked profile? This cannot be undone.');">
+                <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+              </form>
             <% } %>
           </td>
         </tr>

@@ -177,6 +177,9 @@ const { checkUser } = require('./middlewares/authMiddleware');
 const { ensureCsrfToken, verifyCsrf } = require('./middlewares/csrfMiddleware');
 const memberPortalRoutes = require('./routes/memberRoutes');
 const trainerDashRoutes = require('./routes/trainerDashRoutes');
+const attendanceRoutes = require('./routes/attendanceRoutes');
+const attendanceController = require('./controllers/attendanceController');
+const { sendExpiryReminders } = require('./utils/expiryReminder');
 
 
 app.use(checkUser);
@@ -203,12 +206,16 @@ app.use('/auth', authRoutes);
 app.use('/admin', adminRoutes);
 app.use('/payments', paymentRoutes);
 app.use('/members', memberPortalRoutes);
+app.use('/attendance', attendanceRoutes);
+app.get('/members/attendance', require('./middlewares/authMiddleware').requireAuth(['member']), attendanceController.member_get);
 
 
 //Start the server
 if (require.main === module) {
     connect().then(isConnected => {
         if (isConnected) {
+                sendExpiryReminders().catch((error) => console.warn('Expiry reminder job failed:', error.message));
+                setInterval(() => sendExpiryReminders().catch((error) => console.warn('Expiry reminder job failed:', error.message)), 6 * 60 * 60 * 1000);
             app.listen(port, () => {
                 console.log(`Server is running on port ${port}`);
             });

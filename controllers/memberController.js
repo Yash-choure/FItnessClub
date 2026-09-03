@@ -1,16 +1,21 @@
 const bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
 const Member = require('../models/Member');
 const User = require('../models/user');
 const Plan = require('../models/Plan');
 const Trainer = require('../models/Trainer');
 const Payment = require('../models/Payment');
-const { memberSchema } = require('../utils/validators');
+const Attendance = require('../models/Attendance');
+const Membership = require('../models/memberships');
+const { memberSchema, memberUpdateSchema } = require('../utils/validators');
 const { syncMissingMemberProfiles } = require('../utils/memberProfile');
 const { logAudit } = require('../utils/auditLog');
+const { syncExpiredMembers } = require('../utils/expiryReminder');
 
 module.exports.list_get = async (req, res) => {
   try {
     await syncMissingMemberProfiles();
+    await syncExpiredMembers();
     const members = await Member.find().populate('planId').populate('trainerId').populate('userId').lean();
     const today = new Date();
     members.forEach((m) => {
@@ -39,6 +44,42 @@ module.exports.users_get = async (req, res) => {
   }
 };
 
+module.exports.delete_user = async (req, res) => {
+  let session;
+  try {
+    if (String(req.params.userId) === String(req.userJwt.id)) throw new Error('You cannot delete the account currently in use.');
+    session = await mongoose.startSession();
+    session.startTransaction();
+    const user = await User.findById(req.params.userId).session(session);
+    if (!user) throw new Error('User not found.');
+
+    const member = await Member.findOne({ userId: user._id }).session(session);
+    const trainer = await Trainer.findOne({ userId: user._id }).session(session);
+    if (member) {
+      await Attendance.deleteMany({ memberId: member._id }, { session });
+      await Membership.deleteMany({ user: user._id }, { session });
+      await Payment.deleteMany({ memberId: member._id }, { session });
+      await Member.deleteOne({ _id: member._id }, { session });
+    }
+    if (trainer) {
+      await Member.updateMany({ trainerId: trainer._id }, { $set: { trainerId: null } }, { session });
+      await Trainer.deleteOne({ _id: trainer._id }, { session });
+    }
+    await User.deleteOne({ _id: user._id }, { session });
+    await session.commitTransaction();
+    session.endSession();
+    await logAudit(req, { action: 'delete', entity: 'User', entityId: user._id, details: `${user.username} (${user.role})` });
+    req.flash('success_msg', `User ${user.username} deleted.`);
+  } catch (err) {
+    if (session && session.inTransaction()) {
+      await session.abortTransaction();
+      session.endSession();
+    }
+    req.flash('error_msg', err.message);
+  }
+  res.redirect('/admin/users');
+};
+
 module.exports.new_get = async (req, res) => {
   const plans = await Plan.find({ isActive: true }).lean();
   res.render('admin/memberForm', { title: 'Register Member', member: null, plans });
@@ -50,25 +91,28 @@ module.exports.create_post = async (req, res) => {
     req.flash('error_msg', error.details.map((d) => d.message).join(', '));
     return res.redirect('/admin/members/new');
   }
+  let session;
   try {
-    const plan = await Plan.findById(value.planId);
-    if (!plan) throw new Error('Selected plan does not exist.');
+    session = await mongoose.startSession();
+    session.startTransaction();
+    const plan = await Plan.findById(value.planId).session(session);
+    if (!plan || !plan.isActive) throw new Error('Selected plan does not exist or is inactive.');
 
     const validTill = new Date();
     validTill.setDate(validTill.getDate() + plan.durationDays);
 
     const hashedPassword = await bcrypt.hash(value.password, 10);
     const nameParts = value.fullName.trim().split(/\s+/);
-    const newUser = await User.create({
+    const [newUser] = await User.create([{
       username: value.username,
       email: value.email,
       password: hashedPassword,
       firstName: nameParts[0],
       lastName: nameParts.slice(1).join(' ') || nameParts[0],
       role: 'member',
-    });
+    }], { session });
 
-    const created = await Member.create({
+    const [created] = await Member.create([{
       userId: newUser._id,
       fullName: value.fullName,
       phone: value.phone,
@@ -81,12 +125,18 @@ module.exports.create_post = async (req, res) => {
       photoUrl: req.file ? `/uploads/members/${req.file.filename}` : undefined,
       planId: value.planId,
       validTill,
-    });
+    }], { session });
+    await session.commitTransaction();
+    session.endSession();
 
     await logAudit(req, { action: 'create', entity: 'Member', entityId: created._id, details: value.fullName });
     req.flash('success_msg', `Member ${value.fullName} registered successfully.`);
     res.redirect('/admin/members');
   } catch (err) {
+    if (session && session.inTransaction()) {
+      await session.abortTransaction();
+      session.endSession();
+    }
     req.flash('error_msg', err.message);
     res.redirect('/admin/members/new');
   }
@@ -107,7 +157,9 @@ module.exports.show_get = async (req, res) => {
 
 module.exports.update_put = async (req, res) => {
   try {
-    const { fullName, phone, address, gender, status, planId, trainerId, emergencyContactName, emergencyContactPhone, fitnessGoals } = req.body;
+    const { error, value } = memberUpdateSchema.validate(req.body, { abortEarly: false, stripUnknown: true });
+    if (error) throw new Error(error.details.map((d) => d.message).join(', '));
+    const { fullName, phone, address, gender, status, planId, trainerId, emergencyContactName, emergencyContactPhone, fitnessGoals } = value;
     const member = await Member.findById(req.params.id);
     if (!member) throw new Error('Member not found.');
 
@@ -120,6 +172,15 @@ module.exports.update_put = async (req, res) => {
     member.gender = gender || member.gender;
     if (['active', 'expired', 'frozen'].includes(status)) member.status = status;
     if (planId) member.planId = planId;
+    if (trainerId) {
+      const trainer = await Trainer.findById(trainerId);
+      if (!trainer) throw new Error('Selected trainer does not exist.');
+      if (String(member.trainerId) !== String(trainer._id)) {
+        const cap = Number(process.env.TRAINER_CAPACITY_CAP || 25);
+        const load = await Member.countDocuments({ trainerId: trainer._id, status: 'active', _id: { $ne: member._id } });
+        if (load >= cap && status === 'active') throw new Error(`Trainer is at capacity (${cap}). Assignment blocked.`);
+      }
+    }
     member.trainerId = trainerId || null;
     await member.save();
 

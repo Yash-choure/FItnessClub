@@ -15,11 +15,14 @@ const Payment = require('../models/Payment');
 const User = require('../models/user');
 const Membership = require('../models/memberships');
 const { syncMissingMemberProfiles } = require('../utils/memberProfile');
+const { syncExpiredMembers } = require('../utils/expiryReminder');
+const { verifyCsrf } = require('../middlewares/csrfMiddleware');
 
 const adminOnly = requireAuth(['admin']);
 
 router.get('/dashboard', adminOnly, async (req, res) => {
   await syncMissingMemberProfiles();
+  await syncExpiredMembers();
   const today = new Date();
   const week = new Date();
   week.setDate(week.getDate() + 7);
@@ -62,9 +65,10 @@ router.get('/dashboard', adminOnly, async (req, res) => {
 });
 
 router.get('/users', adminOnly, memberCtrl.users_get);
+router.delete('/users/:userId', adminOnly, memberCtrl.delete_user);
 router.get('/members', adminOnly, memberCtrl.list_get);
 router.get('/members/new', adminOnly, memberCtrl.new_get);
-router.post('/members', adminOnly, upload.single('photo'), memberCtrl.create_post);
+router.post('/members', adminOnly, upload.single('photo'), verifyCsrf, memberCtrl.create_post);
 router.get('/members/:id', adminOnly, memberCtrl.show_get);
 router.put('/members/:id', adminOnly, memberCtrl.update_put);
 
@@ -80,6 +84,11 @@ router.get('/trainers/:id/edit', adminOnly, trainerCtrl.edit_get);
 router.post('/trainers', adminOnly, trainerCtrl.create_post);
 router.put('/trainers/:id', adminOnly, trainerCtrl.update_put);
 router.post('/trainers/:id/assign/:memberId', adminOnly, trainerCtrl.assign_post);
+router.post('/trainers/assign', adminOnly, (req, res, next) => {
+  req.params.id = req.body.trainerId;
+  req.params.memberId = req.body.memberId;
+  trainerCtrl.assign_post(req, res, next);
+});
 
 router.get('/audit', adminOnly, auditCtrl.list_get);
 

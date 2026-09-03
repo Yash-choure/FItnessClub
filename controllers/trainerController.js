@@ -55,13 +55,19 @@ module.exports.create_post = async (req, res) => {
 module.exports.assign_post = async (req, res) => {
   try {
     const cap = Number(process.env.TRAINER_CAPACITY_CAP || 25);
-    const load = await Member.countDocuments({ trainerId: req.params.id, status: 'active' });
+    const trainer = await Trainer.findById(req.params.id);
+    if (!trainer) throw new Error('Trainer not found.');
+    const member = await Member.findById(req.params.memberId);
+    if (!member) throw new Error('Member not found.');
+    if (String(member.trainerId) === String(trainer._id)) {
+      req.flash('success_msg', 'Member is already assigned to this trainer.');
+      return res.redirect('/admin/trainers');
+    }
+    const load = await Member.countDocuments({ trainerId: trainer._id, status: 'active' });
     if (load >= cap) {
       req.flash('error_msg', `Trainer is at capacity (${cap}). Assignment blocked.`);
       return res.redirect('/admin/trainers');
     }
-    const member = await Member.findById(req.params.memberId);
-    if (!member) throw new Error('Member not found.');
     member.trainerId = req.params.id;
     await member.save();
     await logAudit(req, {

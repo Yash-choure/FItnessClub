@@ -4,6 +4,7 @@ const Plan = require('../models/Plan');
 const mongoose = require('mongoose');
 const { streamReceiptPDF } = require('../utils/pdfGenerator');
 const { logAudit } = require('../utils/auditLog');
+const Counter = require('../models/Counter');
 
 module.exports.list_get = async (req, res) => {
   const payments = await Payment.find()
@@ -23,6 +24,8 @@ module.exports.processPayment = async (req, res) => {
   try {
     const { memberId, planId, amount, mode } = req.body;
     const adminId = req.userJwt.id;
+    if (!['cash', 'upi', 'card', 'online'].includes(mode)) throw new Error('Invalid payment mode.');
+    if (!Number.isFinite(Number(amount)) || Number(amount) < 0) throw new Error('Invalid payment amount.');
 
     const plan = await Plan.findById(planId).session(session);
     if (!plan || !plan.isActive) throw new Error('Referenced plan not found or inactive.');
@@ -30,8 +33,13 @@ module.exports.processPayment = async (req, res) => {
       throw new Error(`Amount Rs.${amount} does not meet plan price Rs.${plan.price}.`);
     }
 
-    const count = await Payment.countDocuments().session(session);
-    const receiptNo = `RCPT-${new Date().getFullYear()}-${(count + 1).toString().padStart(5, '0')}`;
+    const year = new Date().getFullYear();
+    const counter = await Counter.findOneAndUpdate(
+      { _id: `receipt-${year}` },
+      { $inc: { sequence: 1 } },
+      { new: true, upsert: true, session }
+    );
+    const receiptNo = `RCPT-${year}-${counter.sequence.toString().padStart(5, '0')}`;
 
     const [payment] = await Payment.create(
       [{ memberId, planId, amount: parseFloat(amount), mode, receiptNo, recordedBy: adminId }],

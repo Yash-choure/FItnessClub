@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
   req.session.successMessageDisplayed = false;
   
   req.logout(() => {
-    res.cookie('jwt', '', { maxAge: 1 });
+    res.cookie('jwt', '', { httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 1, sameSite: 'lax' });
     res.redirect('/');
   });
 });

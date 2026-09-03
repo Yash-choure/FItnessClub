@@ -26,7 +26,7 @@ router.post('/', ensureNotAuthenticated, (req, res, next) => {
     req.login(user, (loginErr) => {
       if (loginErr) return next(loginErr);
       const token = createToken(user._id, user.role);
-      res.cookie('jwt', token, { httpOnly: true, maxAge: 8 * 60 * 60 * 1000, sameSite: 'lax' });
+      res.cookie('jwt', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 8 * 60 * 60 * 1000, sameSite: 'lax' });
       if (user.role === 'admin') return res.redirect('/admin/dashboard');
       if (user.role === 'trainer') return res.redirect('/trainers/dashboard');
       return res.redirect('/members/dashboard');

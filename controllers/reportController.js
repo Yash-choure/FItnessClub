@@ -1,6 +1,7 @@
 const Member = require('../models/Member');
 const Payment = require('../models/Payment');
 const Trainer = require('../models/Trainer');
+const { syncExpiredMembers } = require('../utils/expiryReminder');
 
 function sendCsv(res, filename, header, lines) {
   const body = [header, ...lines]
@@ -37,6 +38,7 @@ module.exports.active_get = async (req, res) => {
 };
 
 module.exports.dues_get = async (req, res) => {
+  await syncExpiredMembers();
   const today = new Date();
   const members = await Member.find({ validTill: { $lt: today }, status: { $ne: 'frozen' } })
     .sort({ validTill: 1 })
@@ -63,16 +65,23 @@ module.exports.revenue_get = async (req, res) => {
         _id: { year: { $year: '$paidOn' }, month: { $month: '$paidOn' } },
         total: { $sum: '$amount' },
         count: { $sum: 1 },
+        byMode: { $push: { mode: '$mode', amount: '$amount' } },
       },
     },
+    { $set: {
+      cash: { $sum: { $map: { input: { $filter: { input: '$byMode', as: 'payment', cond: { $eq: ['$$payment.mode', 'cash'] } } }, as: 'payment', in: '$$payment.amount' } } },
+      upi: { $sum: { $map: { input: { $filter: { input: '$byMode', as: 'payment', cond: { $eq: ['$$payment.mode', 'upi'] } } }, as: 'payment', in: '$$payment.amount' } } },
+      card: { $sum: { $map: { input: { $filter: { input: '$byMode', as: 'payment', cond: { $eq: ['$$payment.mode', 'card'] } } }, as: 'payment', in: '$$payment.amount' } } },
+      online: { $sum: { $map: { input: { $filter: { input: '$byMode', as: 'payment', cond: { $eq: ['$$payment.mode', 'online'] } } }, as: 'payment', in: '$$payment.amount' } } },
+    } },
     { $sort: { '_id.year': -1, '_id.month': -1 } },
   ]);
   if (req.query.export === 'csv') {
     return sendCsv(
       res,
       'monthly-revenue.csv',
-      ['Month', 'Payments', 'Total revenue'],
-      rows.map((r) => [`${r._id.month}/${r._id.year}`, r.count, Number(r.total).toFixed(2)])
+      ['Month', 'Payments', 'Total revenue', 'Cash', 'UPI', 'Card', 'Online'],
+      rows.map((r) => [`${r._id.month}/${r._id.year}`, r.count, Number(r.total).toFixed(2), Number(r.cash).toFixed(2), Number(r.upi).toFixed(2), Number(r.card).toFixed(2), Number(r.online).toFixed(2)])
     );
   }
   res.render('admin/report', { title: 'Monthly Revenue Report', reportType: 'revenue', rows });

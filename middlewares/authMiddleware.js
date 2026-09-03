@@ -28,7 +28,7 @@ const requireAuth = (allowedRoles = []) => {
 
     jwt.verify(token, process.env.JWT_SECRET || 'ogmms-dev-secret', (err, decodedToken) => {
       if (err) {
-        res.cookie('jwt', '', { maxAge: 1 });
+        res.cookie('jwt', '', { httpOnly: true, secure: process.env.NODE_ENV === 'production', maxAge: 1, sameSite: 'lax' });
         return res.redirect('/auth/login');
       }
 

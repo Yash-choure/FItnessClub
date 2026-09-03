@@ -17,10 +17,10 @@
       </tbody>
     </table>
     <h2 class="h5 mt-4">Assign trainer</h2>
-    <form class="row g-2 align-items-end" id="assignForm">
+    <form class="row g-2 align-items-end" method="post" action="/admin/trainers/assign">
       <div class="col-md-5">
         <label class="form-label">Trainer</label>
-        <select class="form-select" id="trainerId" required>
+        <select class="form-select" name="trainerId" required>
           <% trainers.forEach(t => { %>
             <option value="<%= t._id %>"><%= t.fullName %> (<%= t.load %>/<%= t.cap %>)</option>
           <% }) %>
@@ -28,7 +28,7 @@
       </div>
       <div class="col-md-5">
         <label class="form-label">Member</label>
-        <select class="form-select" id="memberId" required>
+        <select class="form-select" name="memberId" required>
           <% members.forEach(m => { %>
             <option value="<%= m._id %>"><%= m.fullName %></option>
           <% }) %>
@@ -60,21 +60,4 @@
     </form>
   </div>
 </div>
-<script>
-  document.getElementById('assignForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const t = document.getElementById('trainerId').value;
-    const m = document.getElementById('memberId').value;
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '/admin/trainers/' + t + '/assign/' + m;
-    const csrf = document.createElement('input');
-    csrf.type = 'hidden';
-    csrf.name = '_csrf';
-    csrf.value = '<%= typeof csrfToken !== "undefined" ? csrfToken : "" %>';
-    form.appendChild(csrf);
-    document.body.appendChild(form);
-    form.submit();
-  });
-</script>
 <%- include('../partials/adminLayoutEnd') %>
